@@ -1,0 +1,21 @@
+Package: oisster
+Title: Download and manage local versions of OISST
+Description: Tools in R to download and manage local versions of OISST.
+Version: 0.1
+Depends:
+    R (>= 4.2)
+Imports:
+    rlang,
+    stars,
+    ncdf4,
+    thredds,
+    dplyr,
+    readr,
+    charlier,
+    cofbb
+Maintainer: Ben Tupper <btupper@bigelow.org>
+Author: Ben Tupper <btupper@bigelow.org>
+URL: https://github.com/btupper/oisster
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 7.2.3

@@ -1,0 +1,58 @@
+File http://psl.noaa.gov/thredds/dodsC/Datasets/noaa.oisst.v2.highres/sst.day.mean.1981.nc (NC_FORMAT_CLASSIC):
+
+     1 variables (excluding dimension variables):
+        float sst[lon,lat,time]   
+            long_name: Daily Sea Surface Temperature
+            units: degC
+            valid_range: -3
+             valid_range: 45
+            missing_value: -9.96920996838687e+36
+            precision: 2
+            dataset: NOAA High-resolution Blended Analysis
+            var_desc: Sea Surface Temperature
+            level_desc: Surface
+            statistic: Mean
+            parent_stat: Individual Observations
+            actual_range: -1.79999995231628
+             actual_range: 34.8199996948242
+            _ChunkSizes: 1
+             _ChunkSizes: 720
+             _ChunkSizes: 1440
+
+     3 dimensions:
+        time  Size:122   *** is unlimited *** 
+            long_name: Time
+            units: days since 1800-01-01 00:00:00
+            delta_t: 0000-00-01 00:00:00
+            avg_period: 0000-00-01 00:00:00
+            axis: T
+            actual_range: 66352
+             actual_range: 66473
+            _ChunkSizes: 1
+        lat  Size:720 
+            units: degrees_north
+            actual_range: -89.875
+             actual_range: 89.875
+            axis: Y
+            standard_name: latitude
+            long_name: Latitude
+        lon  Size:1440 
+            axis: X
+            long_name: Longitude
+            standard_name: longitude
+            units: degrees_east
+            actual_range: 0.125
+             actual_range: 359.875
+
+    10 global attributes:
+        Conventions: CF-1.5
+        title: NOAA High-resolution Blended Analysis: Daily Values using AVHRR only
+        institution: NOAA/NCDC
+        source: NOAA/NCDC  ftp://eclipse.ncdc.noaa.gov/pub/OI-daily-v2/
+        history: Thu Aug 24 13:34:17 2017: ncatted -O -a References,global,d,, sst.day.mean.1981.v2.nc
+Version 1.0
+        dataset_title: NOAA Daily Optimum Interpolation Sea Surface Temperature
+        References: https://www.psl.noaa.gov/data/gridded/data.noaa.oisst.v2.highres.html
+        _NCProperties: version=2,netcdf=4.6.3,hdf5=1.10.5
+        comment: Reynolds, et al.(2007) Daily High-Resolution-Blended Analyses for Sea Surface Temperature (available at https://doi.org/10.1175/2007JCLI1824.1). Banzon, et al.(2016) A long-term record of blended satellite and in situ sea-surface temperature for climate monitoring, modeling and environmental studies (available at https://doi.org/10.5194/essd-8-165-2016). Huang, B., C. Liu, V. Banzon, E. Freeman, G. Graham, B. Hankins, T. Smith, and H.-M. Zhang, 2021: Improvements of the Daily Optimum Interpolation Sea Surface Temperature (DOISST) Version 2.1 (available at https://doi.org/10.1175/JCLI-D-20-0166.1). Anomaly is based on 1971-2000 OI.v2 SST. Satellite data: multi-satellite sensor (AVHRR+VIIRS) data. Ice data: NCEP Ice and GSFC Ice. Data less than 15 days old may be subject to revision.
+        DODS_EXTRA.Unlimited_Dimension: time
