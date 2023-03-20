@@ -47,13 +47,13 @@ build_database <- function(path,
                            pattern = "^.*\\.tif$",
                            save_db = FALSE){
   
-  db <- list.files(path,
+  x <- list.files(path,
                    recursive = TRUE,
                    pattern = pattern) |>
     decompose_filename()
   
   if (save_db) write_database(x, path)
-  db
+  x
 }
 
 
