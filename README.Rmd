@@ -50,9 +50,10 @@ The package provides two functions for getting data, `fetch_year()` and `fetch_d
 Make the path...
 
 ```{r} 
-library(oisster)
-library(stars)
-
+suppressPackageStartupMessages({
+  library(oisster)
+  library(stars)
+})
 PATH <- oisster::oisst_path("world")
 if (!dir.exists(PATH)) ok <- dir.create(PATH, recursive = TRUE)
 ```
@@ -92,6 +93,21 @@ db
 Now read them in...
 
 ```{r}
+S <- read_oisst(db, PATH)
+plot(S)
+```
+
+
+### Generating annual summaries
+
+You can use [this script](inst/scripts/annual_summaries.R) to generate annual summaries from the dailies.  Here we load 12 years of annual means (computed from daily means) starting in 1992.
+
+```{r}
+db <- dplyr::filter(DB,
+                    param == 'sst',
+                    per == 'ann',
+                    trt == 'mean',
+                    date %in% seq(as.Date("1992-01-01"), length = 12, by = "year"))
 S <- read_oisst(db, PATH)
 plot(S)
 ```

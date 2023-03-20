@@ -52,17 +52,10 @@ region, but let’s just do the world for now.
 Make the path…
 
 ``` r
-library(oisster)
-library(stars)
-```
-
-    ## Loading required package: abind
-
-    ## Loading required package: sf
-
-    ## Linking to GEOS 3.7.2, GDAL 3.0.4, PROJ 6.3.2; sf_use_s2() is TRUE
-
-``` r
+suppressPackageStartupMessages({
+  library(oisster)
+  library(stars)
+})
 PATH <- oisster::oisst_path("world")
 if (!dir.exists(PATH)) ok <- dir.create(PATH, recursive = TRUE)
 ```
@@ -155,3 +148,23 @@ plot(S)
     ## downsample set to 5
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+### Generating annual summaries
+
+You can use [this script](inst/scripts/annual_summaries.R) to generate
+annual summaries from the dailies. Here we load 12 years of annual means
+(computed from daily means) starting in 1992.
+
+``` r
+db <- dplyr::filter(DB,
+                    param == 'sst',
+                    per == 'ann',
+                    trt == 'mean',
+                    date %in% seq(as.Date("1992-01-01"), length = 12, by = "year"))
+S <- read_oisst(db, PATH)
+plot(S)
+```
+
+    ## downsample set to 5
+
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
