@@ -5,6 +5,8 @@ R tools to download and manage
 [OISST](https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.highres.html)
 data.
 
+![image](https://psl.noaa.gov/data/gridded/images/small/noaahighres.png)
+
 ### Requirements
 
 [R v4.2+](https://www.r-project.org/)
