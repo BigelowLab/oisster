@@ -115,7 +115,7 @@ if (RANGE){
 }
 
 DB = dplyr::select(DB, -year) |>
-  dplyr::distint() |>
+  dplyr::distinct() |>
   dplyr::arrange(date, param, per,  trt) |>
   oisster::write_database(PATH)
   

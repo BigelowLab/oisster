@@ -7,3 +7,91 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+R tools to download and manage [OISST](https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.highres.html) data.
+
+### Requirements
+
+[R v4.2+](https://www.r-project.org/)
+
+From CRAN
+
+    + [rlang](https://CRAN.R-project.org/package=rlang)
+    + [stars](https://CRAN.R-project.org/package=stars)
+    + [ncdf4](https://CRAN.R-project.org/package=ncdf4)
+    + [thredds](https://CRAN.R-project.org/package=thredds)
+    + [dplyr](https://CRAN.R-project.org/package=dplyr)
+    + [readr](https://CRAN.R-project.org/package=readr)
+    
+From github
+
+    + [charlier](https://github.com/BigelowLab/charlier)
+    
+### Installation
+
+```
+remotes::install_gitgub("BigelowLab/charlier")
+remotes::install_gitgub("BigelowLab/oisster")
+```
+
+### Data path
+
+This package can be used to download and manage many GEOTIFF files in a location **of your choosing.** You need to create and set the path once before using the package (and if you ever change the data storage location.)  Let's suppose that your data path is `/mnt/ecocast/coredata/oisst`.  Use the `set_root_path()` function first.
+
+```
+oisster::set_root_path(`/mnt/s1/projects/ecocast/coredata/oisst`)
+```
+
+The function will save this information in a hidden file securely in your home folder. Using the above allows you to return to working with the data in later R sessions without the fuss of setting things up each time.  
+
+### Get some data for the first time.
+
+The package provides two functions for getting data, `fetch_year()` and `fetch_dates()`.  AS the name implies, `fetch_year` will download daily OISST maps for a specified year.  You can save data to a particular region, but let's just do the world for now.
+
+Make the path...
+
+```{r} 
+library(oisster)
+library(stars)
+
+PATH <- oisster::oisst_path("world")
+if (!dir.exists(PATH)) ok <- dir.create(PATH, recursive = TRUE)
+```
+
+Now download a year or two (this step takes some time, so not run in this markdown.) Note that OISST actually starts in September of 1981 and runs through "yesterday", so there's more data you can download.
+
+```
+ok <- lapply(c(1982, 1983), fetch_year, path = PATH)
+```
+
+Next we need to build and save a database, which is stored as a CSV in the data path.  What is in my database contains more years than what is downloaded above.  But you get the idea.
+
+```{r}
+DB <- build_database(PATH, save_db = TRUE)
+DB
+```
+
+The database may show that you have variants on the period (`per`) or treatment (`trt`).
+
+```{r}
+dplyr::count(DB, per, trt)
+```
+### Opening a series
+
+If you filter the database to a subset of interest, say the beginning of first of each month in 1992, then you can load them into a `stars` array.
+
+```{r}
+db <- dplyr::filter(DB,
+                    param == 'sst',
+                    per == 'day',
+                    trt == 'mean',
+                    date %in% seq(as.Date("1992-01-01"), length = 12, by = "month"))
+db
+```
+
+
+Now read them in...
+
+```{r}
+S <- read_oisst(db, PATH)
+plot(S)
+```

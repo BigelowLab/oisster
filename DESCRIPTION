@@ -11,8 +11,7 @@ Imports:
     thredds,
     dplyr,
     readr,
-    charlier,
-    cofbb
+    charlier
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/btupper/oisster
