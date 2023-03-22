@@ -46,8 +46,9 @@ parse_vars <- function(x){
 Args <- argparser::arg_parser("Annual summary compute script",
                               name = "annual_summaries",
                               hide.opts = TRUE) |>
-  argparser::add_argument("--year", help = "one or more years as YYYY or a range YYYY:YYYY",
-               default = format(Sys.Date(), "%Y")) |>
+  argparser::add_argument("--year", 
+                          help = "one or more years as YYYY or a range YYYY:YYYY, default is last year",
+               default = format(Sys.Date() - 365, "%Y")) |>
   argparser::add_argument("--region", help = "region to operate upon",
                default = "world") |>
   argparser::add_argument("--vars", help = "variables to compute in style of mean+min+max+...",

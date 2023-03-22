@@ -45,7 +45,7 @@ fetch_year <- function(year = 1981,
 #' @param param char, the parameter to fetch
 #' @param left num, see \code{\link{get_one}}
 #' @param path char, the output path
-#' @param logical, TRUE if successful
+#' @param tibble database (possibly with no wrows)
 fetch_dates <- function(dates = Sys.Date() + c(-10, -9, -8),
                        param = 'sst.day.mean',
                        left = -180,
@@ -67,31 +67,29 @@ fetch_dates <- function(dates = Sys.Date() + c(-10, -9, -8),
     db <- decompose_filename(ofile) |>
       dplyr::filter(date %in% tbl$date)
     
-    if (nrow(db) == 0) {return(rep(FALSE, nrow(tbl)))}
+    if (nrow(db) == 0) {return(dplyr::slice(db, 0))}
     
     ofile <- compose_filename(db, path)
     
     # make sure the subdirectories exist
     ok <- sapply(unique(dirname(ofile)), dir.create, recursive = TRUE, showWarnings = FALSE)
   
-    ok <- sapply(seq_along(db$dates),
-                 function(itime){
+    ok <- sapply(seq_along(db$date),
+                 function(i){
                    s <- get_one(x, time = db$date[i], left = left) |>
-                     stars::write_stars(ofile[1])
+                     stars::write_stars(ofile[i])
                    file.exists(ofile[i])
                  })
     
     ncdf4::nc_close(x)
-    ok
+    dplyr::filter(db, ok)
   }
   
   
-  d <- dplyr::tibble(
-    date = dates,
-    year = format(date, "%Y")) |>
+  dplyr::tibble( date = dates, year = format(date, "%Y")) |>
     dplyr::group_by(year) |>
-    dplyr::group_map(get_year)
-  
+    dplyr::group_map(get_year) |>
+    dplyr::bind_rows()
 }
 
 

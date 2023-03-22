@@ -20,7 +20,7 @@ fetch_dates(
 
 \item{path}{char, the output path}
 
-\item{logical, }{TRUE if successful}
+\item{tibble}{database (possibly with no wrows)}
 }
 \description{
 Fetch and store one or more dates
