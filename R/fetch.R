@@ -25,7 +25,8 @@ fetch_month = function(date = seq(from = as.Date("1981-01-01"),
   
   uri <- query_oisst(param = "sst.mon.mean")
   x <- ncdf4::nc_open(uri)
-  BB = st_bbox(bb, crs = 4326)
+  BB = sf::st_bbox(bb, crs = 4326) |>
+    sf::st_as_sfc()
   xx = lapply(seq_along(date),
     function(idate){
       filename = format(date[idate], "sst.mon.mean_%Y-%m-%d.tif")
