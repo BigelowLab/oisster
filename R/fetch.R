@@ -30,7 +30,7 @@ fetch_month = function(date = seq(from = as.Date("1981-01-01"),
     function(idate){
       filename = format(date[idate], "sst.mon.mean_%Y-%m-%d.tif")
       get_one(x, time = date[idate], left = left) |>
-        stars::st_crop(BB) |>
+        sf::st_crop(BB) |>
         stars::write_stars(file.path(path, filename))
     })
   
