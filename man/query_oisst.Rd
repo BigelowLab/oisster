@@ -13,7 +13,7 @@ query_oisst(
 \arguments{
 \item{year}{num, one or more years to query}
 
-\item{param}{char, one parameter to query}
+\item{param}{char, one parameter to query such as 'sst.day.mean' or 'sst.mon.mean'}
 
 \item{base_uri}{char, the base URI to the top level catalog (as .xml)}
 }

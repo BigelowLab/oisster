@@ -15,7 +15,7 @@ oisst_uri <- function(what = c("html", "xml")[1]){
 #' Query the OISST thredds catalog
 #' 
 #' @param year num, one or more years to query
-#' @param param char, one parameter to query
+#' @param param char, one parameter to query such as 'sst.day.mean' or 'sst.mon.mean'
 #' @param base_uri char, the base URI to the top level catalog (as .xml)
 #' @return named list of URLs to datastes matching the query
 query_oisst <- function(year = seq(from = 1981, 
@@ -23,6 +23,11 @@ query_oisst <- function(year = seq(from = 1981,
                                    by = 1),
                         param = "sst.day.mean",
                         base_uri = oisst_uri("xml")){
+  
+  if (tolower(param[1]) == "sst.mon.mean"){
+    return('http://psl.noaa.gov/thredds/dodsC/Datasets/noaa.oisst.v2.highres/sst.mon.mean.nc')
+  }
+  
   
   Top = thredds::get_catalog(base_uri)
   
