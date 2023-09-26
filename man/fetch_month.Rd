@@ -6,7 +6,6 @@
 \usage{
 fetch_month(
   date = seq(from = as.Date("1981-01-01"), to = current_month(), by = "month"),
-  left = c(0, -180)[1],
   bb = c(xmin = 0, ymin = 0, xmax = 360, ymax = 90),
   path = oisst_path("world")
 )
@@ -14,9 +13,8 @@ fetch_month(
 \arguments{
 \item{date}{Date, one or more dates}
 
-\item{left}{num, see \code{\link{get_one}}}
-
-\item{bb}{numeric 4 element bounding box see \code{\link[sf]{st_bbox}}}
+\item{bb}{numeric 4 element bounding box in the range of 
+(xmin = 0, ymin = -90, xmax= 360, ymax = 90)}
 
 \item{path}{char, the output path}
 

@@ -12,17 +12,20 @@ current_month = function(){
 #'
 #' @export
 #' @param date Date, one or more dates
-#' @param bb numeric 4 element bounding box see \code{\link[sf]{st_bbox}}
-#' @param left num, see \code{\link{get_one}}
+#' @param bb numeric 4 element bounding box in the range of 
+#'   (xmin = 0, ymin = -90, xmax= 360, ymax = 90)
 #' @param path char, the output path
 #' @param logical, TRUE if successful
 fetch_month = function(date = seq(from = as.Date("1981-01-01"), 
                                   to = current_month(),
                                   by = "month"),
-                       left = c(0,-180)[1],
                        bb = c(xmin = 0, ymin = 0, xmax = 360, ymax = 90),
                        path = oisst_path("world")){
   
+  orig_s2 = sf_use_s2(FALSE)
+  on.exit({
+    sf::sf_use_s2(orig_s2)
+  })
   uri <- query_oisst(param = "sst.mon.mean")
   x <- ncdf4::nc_open(uri)
   BB = sf::st_bbox(bb, crs = 4326) |>
@@ -30,7 +33,7 @@ fetch_month = function(date = seq(from = as.Date("1981-01-01"),
   xx = lapply(seq_along(date),
     function(idate){
       filename = format(date[idate], "sst.mon.mean_%Y-%m-%d.tif")
-      get_one(x, time = date[idate], left = left) |>
+      get_one(x, time = date[idate]) |>
         sf::st_crop(BB) |>
         stars::write_stars(file.path(path, filename))
     })

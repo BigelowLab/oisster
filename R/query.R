@@ -14,7 +14,7 @@ oisst_uri <- function(what = c("html", "xml")[1]){
 
 #' Query the OISST thredds catalog
 #' 
-#' @param export
+#' @export
 #' @param year num, one or more years to query
 #' @param param char, one parameter to query such as 'sst.day.mean' or 'sst.mon.mean'
 #' @param base_uri char, the base URI to the top level catalog (as .xml)
