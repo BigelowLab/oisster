@@ -5,13 +5,14 @@
 \title{Fetch a series of months}
 \usage{
 fetch_month(
-  date = seq(from = as.Date("1981-01-01"), to = current_month(), by = "month"),
+  dates = seq(from = as.Date("1981-09-01"), to = current_month(offset = -1), by =
+    "month"),
   bb = c(xmin = 0, ymin = 0, xmax = 360, ymax = 90),
   path = oisst_path("world")
 )
 }
 \arguments{
-\item{date}{Date, one or more dates}
+\item{dates}{Date, one or more dates}
 
 \item{bb}{numeric 4 element bounding box in the range of 
 (xmin = 0, ymin = -90, xmax= 360, ymax = 90)}

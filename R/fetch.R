@@ -1,46 +1,75 @@
 #' Retrieve the current month
 #' 
 #' @export
+#' @param x Date the date to compute upon (useful for "offset")
+#' @param offset numeric, days to offset. If 0 (the default) then the current month, 
+#' if -1 then the prior month, to 2 months before try -32, to get the next month try
+#' 32.  It's a hack.
 #' @return Date class object
-current_month = function(){
-  Sys.Date() |>
+current_month = function(x = Sys.Date(), offset = 0){
+  x = x |>
     format("%Y-%m-01") |>
     as.Date()
+  
+  if (offset != 0){
+    x = current_month(x + offset)
+  }
+  
+  x
 }
 
 #' Fetch a series of months
 #'
 #' @export
-#' @param date Date, one or more dates
+#' @param dates Date, one or more dates
 #' @param bb numeric 4 element bounding box in the range of 
 #'   (xmin = 0, ymin = -90, xmax= 360, ymax = 90)
 #' @param path char, the output path
 #' @param logical, TRUE if successful
-fetch_month = function(date = seq(from = as.Date("1981-01-01"), 
-                                  to = current_month(),
+fetch_month = function(dates = seq(from = as.Date("1981-09-01"), 
+                                  to = current_month(offset = -1),
                                   by = "month"),
                        bb = c(xmin = 0, ymin = 0, xmax = 360, ymax = 90),
                        path = oisst_path("world")){
   
-  orig_s2 = sf_use_s2(FALSE)
+  orig_s2 = suppressMessages(sf::sf_use_s2(FALSE))
   on.exit({
-    sf::sf_use_s2(orig_s2)
+    suppressMessages(sf::sf_use_s2(orig_s2))
   })
+  
+  if (inherits(bb, "bbox")) {
+    sf::st_crs(bb) = oisster_crs()
+    BB = sf::st_as_sfc(bb)
+  } else {
+    BB = sf::st_bbox(bb, crs = oisster_crs()) |>
+      sf::st_as_sfc()
+  }
   uri <- query_oisst(param = "sst.mon.mean")
   x <- ncdf4::nc_open(uri)
-  BB = sf::st_bbox(bb, crs = 4326) |>
-    sf::st_as_sfc()
-  xx = lapply(seq_along(date),
+  
+  # here we craft the filenames from the NCDF and the dates
+  # and then the db, and 
+  ofile <- generate_filename(x, dates)
+  db <- decompose_filename(ofile)
+  ofile <- compose_filename(db, path)
+  ok <- sapply(unique(dirname(ofile)), dir.create, 
+               recursive = TRUE, showWarnings = FALSE)
+  
+  
+  xx = lapply(seq_along(dates),
     function(idate){
-      filename = format(date[idate], "sst.mon.mean_%Y-%m-%d.tif")
-      get_one(x, time = date[idate]) |>
-        sf::st_crop(BB) |>
-        stars::write_stars(file.path(path, filename))
+      r = try(suppressMessages(get_one(x, time = dates[idate])))
+      if (inherits(r, "try-error")){
+        print(r)
+        r = NULL
+      } else {
+        r = suppressMessages(sf::st_crop(r, BB)) |>
+          stars::write_stars(ofile[idate])
+      }
+      r
     })
   
-  do.call(c, append(xx, list(along = list(date = date))))
-
-  
+  do.call(c, append(xx, list(along = list(date = dates))))
 }
 
 #' Fetch and store an entire year

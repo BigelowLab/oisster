@@ -4,10 +4,14 @@
 \alias{generate_filename}
 \title{Generate filenames for ncdf4 contents}
 \usage{
-generate_filename(x, ext = ".tif")
+generate_filename(x, dates = get_time(x), format = "\%Y-\%m-\%d", ext = ".tif")
 }
 \arguments{
 \item{x}{ncdf4 object}
+
+\item{dates}{Date, the dates to format, by default all available}
+
+\item{format}{char, the date format to use}
 
 \item{ext}{char extension to apply to filename (default ".tif")}
 }

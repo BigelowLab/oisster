@@ -2,12 +2,17 @@
 #' 
 #' @export
 #' @param x ncdf4 object
+#' @param dates Date, the dates to format, by default all available
+#' @param format char, the date format to use
 #' @param ext char extension to apply to filename (default ".tif")
 #' @return char vector of "param.per.trt.YYYY-mm-dd.ext"
-generate_filename <- function(x, ext = ".tif"){
+generate_filename <- function(x, 
+                              dates = get_time(x),
+                              format = "%Y-%m-%d",
+                              ext = ".tif"){
   
   s = gsub(".nc", "", basename(x$filename), fixed = TRUE)
-  dates = format(get_time(x), "-%m-%d")  
+  dates = format(dates, ".%Y-%m-%d")  
   paste0(s, dates, ext)
 }
 
@@ -38,7 +43,9 @@ get_time <- function(x, epoch = get_epoch(x)){
 #' @param time Date class times
 #' @return index of where the specified time falls relative to the times in \code{x}
 get_time_index <- function(x, time){
-  findInterval(time, get_time(x))
+  ix = findInterval(time, get_time(x))
+  if (any(ix <= 0)) warning("requested time prior to available time")
+  ix
 }
 
 
@@ -55,7 +62,7 @@ get_geometry <- function(x){
   ylim = range(x$dim$lat$vals) + dy/c(-2, 2)
   bbox = sf::st_bbox(c(xmin = xlim[1], xmax = xlim[2], 
                        ymin = ylim[1], ymax = ylim[2]), 
-                 crs = sf::st_crs(4326))
+                 crs = oisster_crs())
 
   list(
     xlim = xlim,
@@ -99,7 +106,7 @@ get_one <- function(x,
    g$xlim = c(-180, 180) 
    g$bbox = sf::st_bbox(c(xmin = g$xlim[1], xmax = g$xlim[2], 
                           ymin = g$ylim[1], ymax = g$ylim[2]), 
-                        crs = sf::st_crs(4326))
+                        crs = oisster_crs())
    v <- as.vector(t(v))
   } else{
     v = as.vector(m)
