@@ -1,7 +1,7 @@
 Package: oisster
 Title: Download and manage local versions of OISST
 Description: Tools in R to download and manage local versions of OISST.
-Version: 0.1
+Version: 0.2
 Depends:
     R (>= 4.2)
 Imports:

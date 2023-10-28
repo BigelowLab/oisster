@@ -5,11 +5,16 @@
 \title{Given one or more filename, decompose into a database}
 \usage{
 decompose_filename(
-  x = c("/foo/bar/sst.day.mean.1981-09-01.tif", "/foo/bar/icec.mon.max.1981-09-01.tif")
+  x = c("sst.day.mean.1981-09-01.tif", "icec.mon.max.1981-09-01.tif",
+    "icec.mon.max.ltm.1991-2020.tif", "sst.day.mean.ltm.1971-2000.1971-01-01.tif",
+    "sst.mon.ltm.1991-2020.1991-11-01.tif"),
+  ext = ".tif"
 )
 }
 \arguments{
 \item{x}{char vector of filenames}
+
+\item{ext}{char the extension to remove before processing. NA to skip.}
 }
 \value{
 tibble database

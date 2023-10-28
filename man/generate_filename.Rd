@@ -17,6 +17,7 @@ generate_filename(x, dates = get_time(x), format = "\%Y-\%m-\%d", ext = ".tif")
 }
 \value{
 char vector of "param.per.trt.YYYY-mm-dd.ext"
+  or "param.per.trt.YYYY-YYYY.YYYY-mm-dd.ext" for ltm
 }
 \description{
 Generate filenames for ncdf4 contents

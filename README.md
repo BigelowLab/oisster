@@ -5,7 +5,12 @@ R tools to download and manage
 [OISST](https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.highres.html)
 data.
 
-![image](https://psl.noaa.gov/data/gridded/images/small/noaahighres.png)
+<figure>
+<img
+src="https://psl.noaa.gov/data/gridded/images/small/noaahighres.png"
+alt="image" />
+<figcaption aria-hidden="true">image</figcaption>
+</figure>
 
 ### Requirements
 
@@ -46,68 +51,137 @@ time.
 
 ### Get some data for the first time.
 
-The package provides two functions for getting data, `fetch_year()` and
-`fetch_dates()`. AS the name implies, `fetch_year` will download daily
-OISST maps for a specified year. You can save data to a particular
-region, but let’s just do the world for now.
+The package provides a single function for getting data,
+`fetch_oisst()`. What gets downloaded depends upon the product that you
+select. See `?fetch_oisst` for details. You can save data for a
+particular region or the entire world, but let’s just do the Gulf of St
+Lawrence in Eastern Canada for now. Note that the longitude values for
+OISST range from 0 to 360, so we define our bounding box this way, too,
+rather than in the range of -180 to 180.
 
-Make the path…
+First we load what we need for software, and then define the region
+nickname, ‘gosl’, and bounding box. Then we make the data path.
 
 ``` r
 suppressPackageStartupMessages({
   library(oisster)
   library(stars)
+  library(dplyr)
 })
-PATH <- oisster::oisst_path("world")
-if (!dir.exists(PATH)) ok <- dir.create(PATH, recursive = TRUE)
+region = 'gosl'
+bb = c(xmin = 293, xmax = 303.5, ymin = 44.4, ymax = 50.5)
+path = oisst_path(region)
+ok = dir.create(path, recursive = TRUE, showWarnings = FALSE)
 ```
 
-Now download a year or two (this step takes some time, so not run in
-this markdown.) Note that OISST actually starts in September of 1981 and
-runs through “yesterday”, so there’s more data you can download.
+#### Daily mean data
 
-    ok <- lapply(c(1982, 1983), fetch_year, path = PATH)
+Now download a short sequence of daily mean values. Note that OISST
+actually starts in September of 1981 and runs through “yesterday”, so
+there’s more data you can download. This can take a while to run
+depending upon yoyr connection, server activity and the weather
+(kidding).
 
-Next we need to build and save a database, which is stored as a CSV in
-the data path. What is in my database contains more years than what is
-downloaded above. But you get the idea.
+We are passing in a a pair of dates for the start and stop, but the
+reality is that the function downloads all data between the two dates.
 
 ``` r
-DB <- build_database(PATH, save_db = TRUE)
-DB
+db_day = oisster::fetch_oisst(dates = as.Date(c("1982-01-01", "1983-12-31")),
+                          param = "sst.day.mean",
+                          path = path,
+                          bb = bb) |>
+  dplyr::glimpse()
 ```
 
-    ## # A tibble: 15,382 × 4
-    ##    date       param per   trt  
-    ##    <date>     <chr> <chr> <chr>
-    ##  1 1981-09-01 sst   day   mean 
-    ##  2 1981-09-02 sst   day   mean 
-    ##  3 1981-09-03 sst   day   mean 
-    ##  4 1981-09-04 sst   day   mean 
-    ##  5 1981-09-05 sst   day   mean 
-    ##  6 1981-09-06 sst   day   mean 
-    ##  7 1981-09-07 sst   day   mean 
-    ##  8 1981-09-08 sst   day   mean 
-    ##  9 1981-09-09 sst   day   mean 
-    ## 10 1981-09-10 sst   day   mean 
-    ## # … with 15,372 more rows
+    ## Rows: 730
+    ## Columns: 5
+    ## $ date  <date> 1982-01-01, 1982-01-02, 1982-01-03, 1982-01-04, 1982-01-05, 198…
+    ## $ param <chr> "sst", "sst", "sst", "sst", "sst", "sst", "sst", "sst", "sst", "…
+    ## $ per   <chr> "day", "day", "day", "day", "day", "day", "day", "day", "day", "…
+    ## $ trt   <chr> "mean", "mean", "mean", "mean", "mean", "mean", "mean", "mean", …
+    ## $ ltm   <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+
+The database return is a simple table we can use to reconstruct
+filenames. Note that there is no directory path saved in the database;
+this omission is intentional. Also not that the `ltm` column is all NA.
+We’ll use that column for recording the period over which the long term
+mean (ltm) is computed.
+
+#### Monthly mean data
+
+Let’s also collect some monthly mean data for the same time period.
+
+``` r
+db_month = oisster::fetch_oisst(dates = as.Date(c("1982-01-01", "1983-12-31")),
+                          param = "sst.mon.mean",
+                          path = path,
+                          bb = bb) |>
+  dplyr::glimpse()
+```
+
+    ## Rows: 24
+    ## Columns: 5
+    ## $ date  <date> 1982-01-01, 1982-02-01, 1982-03-01, 1982-04-01, 1982-05-01, 198…
+    ## $ param <chr> "sst", "sst", "sst", "sst", "sst", "sst", "sst", "sst", "sst", "…
+    ## $ per   <chr> "mon", "mon", "mon", "mon", "mon", "mon", "mon", "mon", "mon", "…
+    ## $ trt   <chr> "mean", "mean", "mean", "mean", "mean", "mean", "mean", "mean", …
+    ## $ ltm   <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+
+#### Long term mean data
+
+Or even long-term means for which we don’t specify the date.
+
+``` r
+db_ltm = oisster::fetch_oisst(param = "sst.mon.ltm.1991-2020",
+                              path = path,
+                              bb = bb) |>
+  dplyr::glimpse()
+```
+
+    ## Rows: 12
+    ## Columns: 5
+    ## $ date  <date> 1991-01-01, 1991-02-01, 1991-03-01, 1991-04-01, 1991-05-01, 199…
+    ## $ param <chr> "sst", "sst", "sst", "sst", "sst", "sst", "sst", "sst", "sst", "…
+    ## $ per   <chr> "mon", "mon", "mon", "mon", "mon", "mon", "mon", "mon", "mon", "…
+    ## $ trt   <chr> "ltm", "ltm", "ltm", "ltm", "ltm", "ltm", "ltm", "ltm", "ltm", "…
+    ## $ ltm   <chr> "1991-2020", "1991-2020", "1991-2020", "1991-2020", "1991-2020",…
+
+Note that the `ltm` column is now populated.
+
+#### Build a database
+
+We have the databases for each downloaded file; we could bind these and
+save for later use. But we also have built in tools for creating,
+writing and reading the database. `build_database` will automatically
+scan the path provided for all the raster files, and decompose the
+filenames into a database
+
+``` r
+DB = oisster::build_database(path, save_db = TRUE) |>
+  dplyr::glimpse()
+```
+
+    ## Rows: 770
+    ## Columns: 5
+    ## $ date  <date> 1981-09-01, 1981-10-01, 1981-11-01, 1981-12-01, 1982-01-01, 198…
+    ## $ param <chr> "sst", "sst", "sst", "sst", "sst", "sst", "sst", "sst", "sst", "…
+    ## $ per   <chr> "mon", "mon", "mon", "mon", "day", "mon", "day", "day", "day", "…
+    ## $ trt   <chr> "mean", "mean", "mean", "mean", "mean", "mean", "mean", "mean", …
+    ## $ ltm   <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
 
 The database may show that you have variants on the period (`per`) or
 treatment (`trt`).
 
 ``` r
-dplyr::count(DB, per, trt)
+dplyr::count(DB, per, trt, ltm)
 ```
 
-    ## # A tibble: 6 × 3
-    ##   per   trt       n
-    ##   <chr> <chr> <int>
-    ## 1 ann   max      42
-    ## 2 ann   mean     42
-    ## 3 ann   min      42
-    ## 4 ann   range    42
-    ## 5 ann   sum      42
-    ## 6 day   mean  15172
+    ## # A tibble: 3 × 4
+    ##   per   trt   ltm           n
+    ##   <chr> <chr> <chr>     <int>
+    ## 1 day   mean  <NA>        730
+    ## 2 mon   ltm   1991-2020    12
+    ## 3 mon   mean  <NA>         28
 
 ### Opening a series
 
@@ -120,36 +194,34 @@ db <- dplyr::filter(DB,
                     param == 'sst',
                     per == 'day',
                     trt == 'mean',
-                    date %in% seq(as.Date("1992-01-01"), length = 12, by = "month"))
+                    date %in% seq(as.Date("1982-01-01"), length = 12, by = "month"))
 db
 ```
 
-    ## # A tibble: 12 × 4
-    ##    date       param per   trt  
-    ##    <date>     <chr> <chr> <chr>
-    ##  1 1992-01-01 sst   day   mean 
-    ##  2 1992-02-01 sst   day   mean 
-    ##  3 1992-03-01 sst   day   mean 
-    ##  4 1992-04-01 sst   day   mean 
-    ##  5 1992-05-01 sst   day   mean 
-    ##  6 1992-06-01 sst   day   mean 
-    ##  7 1992-07-01 sst   day   mean 
-    ##  8 1992-08-01 sst   day   mean 
-    ##  9 1992-09-01 sst   day   mean 
-    ## 10 1992-10-01 sst   day   mean 
-    ## 11 1992-11-01 sst   day   mean 
-    ## 12 1992-12-01 sst   day   mean
+    ## # A tibble: 12 × 5
+    ##    date       param per   trt   ltm  
+    ##    <date>     <chr> <chr> <chr> <chr>
+    ##  1 1982-01-01 sst   day   mean  <NA> 
+    ##  2 1982-02-01 sst   day   mean  <NA> 
+    ##  3 1982-03-01 sst   day   mean  <NA> 
+    ##  4 1982-04-01 sst   day   mean  <NA> 
+    ##  5 1982-05-01 sst   day   mean  <NA> 
+    ##  6 1982-06-01 sst   day   mean  <NA> 
+    ##  7 1982-07-01 sst   day   mean  <NA> 
+    ##  8 1982-08-01 sst   day   mean  <NA> 
+    ##  9 1982-09-01 sst   day   mean  <NA> 
+    ## 10 1982-10-01 sst   day   mean  <NA> 
+    ## 11 1982-11-01 sst   day   mean  <NA> 
+    ## 12 1982-12-01 sst   day   mean  <NA>
 
-Now read them in…
+Now read them in and plot
 
 ``` r
-S <- read_oisst(db, PATH)
+S <- read_oisst(db, path)
 plot(S)
 ```
 
-    ## downsample set to 5
-
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/read-1.png)<!-- -->
 
 ### Generating annual summaries
 
@@ -163,10 +235,12 @@ db <- dplyr::filter(DB,
                     per == 'ann',
                     trt == 'mean',
                     date %in% seq(as.Date("1992-01-01"), length = 12, by = "year"))
-S <- read_oisst(db, PATH)
-plot(S)
+if (nrow(db) > 0){
+  S <- read_oisst(db, path)
+  plot(S)
+} else {
+  cat("no annual summaries found")
+}
 ```
 
-    ## downsample set to 5
-
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+    ## no annual summaries found
