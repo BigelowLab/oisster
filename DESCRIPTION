@@ -6,6 +6,7 @@ Depends:
     R (>= 4.2)
 Imports:
     rlang,
+    sf,
     stars,
     ncdf4,
     thredds,

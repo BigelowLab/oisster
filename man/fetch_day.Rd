@@ -16,6 +16,8 @@ fetch_day(
 
 \item{param}{char, the parameter to fetch}
 
+\item{bb}{numeric, named vector of xmin, xmax, ymin and ymax bounding box}
+
 \item{path}{char, the output path}
 }
 \value{

@@ -125,7 +125,7 @@ fetch_ltm = function(param = "sst.mon.ltm.1991-2020",
   uri = query_oisst(param = param)
   
   if (length(uri) == 0){
-    stop("param not matched among available resources:", paste(lut$name, sep = ", "))
+    stop("param not matched among available resources:", paste(param[1], sep = ", "))
   }
   
   x <- ncdf4::nc_open(uri)
@@ -246,6 +246,7 @@ fetch_year <- function(year = 1981,
 #' @export
 #' @param dates Date, the dates
 #' @param param char, the parameter to fetch
+#' @param bb numeric, named vector of xmin, xmax, ymin and ymax bounding box
 #' @param path char, the output path
 #' @return tibble database (possibly with no wrows)
 fetch_day <- function(dates = Sys.Date() + c(-10, -9, -8),
@@ -275,7 +276,6 @@ fetch_day <- function(dates = Sys.Date() + c(-10, -9, -8),
     ok <- sapply(seq_along(db$date),
                  function(i){
                    s <- get_one(x, bb = bb, time = db$date[i]) |>
-                     #sf::st_crop(BB) |>
                      stars::write_stars(ofile[i])
                    file.exists(ofile[i])
                  })
@@ -286,7 +286,7 @@ fetch_day <- function(dates = Sys.Date() + c(-10, -9, -8),
   
   
   db = dplyr::tibble(date = dates, year = format(date, "%Y")) |>
-    dplyr::group_by(year) |>
+    dplyr::group_by(dplyr::all_of("year")) |>
     dplyr::group_map(get_year) |>
     dplyr::bind_rows()
   db
@@ -307,7 +307,7 @@ fetch_day <- function(dates = Sys.Date() + c(-10, -9, -8),
 #'  \item{sst.day.mean.ltm.<start>-<stop>  include stars and stop years}
 #'  \item{icec.day.mean.ltm.<start>-<stop> include stars and stop years}
 #' }
-#' @param bb numeric, named vector of xmin, xmax, ymin and ymax
+#' @param bb numeric, named vector of xmin, xmax, ymin and ymax bounding box
 #' @param path char the root path where data is saved
 fetch_oisst = function(dates = c(as.Date("1991-09-01"), Sys.Date()),
                        param = 'sst.day.mean',

@@ -234,7 +234,7 @@ get_nav = function(x,
     time = c(ix[1], ix[2] - ix[1] + 1)
   }
   if (time[1] <= 0) stop("time[1] must be at or later than:", 
-                      format(X$get_time()[1], "%Y-%m-%d"))
+                      format(get_time(x)[1], "%Y-%m-%d"))
   if (time[2] <= 0) stop("time[2] implies zero-length")
   
   if (inherits(bb, "bbox")) bb = as.vector(bb)

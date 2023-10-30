@@ -26,7 +26,7 @@ fetch_oisst(
  \item{icec.day.mean.ltm.<start>-<stop> include stars and stop years}
 }}
 
-\item{bb}{numeric, named vector of xmin, xmax, ymin and ymax}
+\item{bb}{numeric, named vector of xmin, xmax, ymin and ymax bounding box}
 
 \item{path}{char the root path where data is saved}
 }

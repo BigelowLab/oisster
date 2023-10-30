@@ -30,7 +30,7 @@ parse_oisst_filename = function(x = c("icec.day.mean.1981.nc", "icec.day.mean.lt
           date = as.Date(paste0(substr(ltm, 1,4), "-01-01"), format = "%Y-%m-%d"),
           param = ss[[i]][1],
           per = ss[[i]][2],
-          trt = ss[[i]][3],
+          trt = "ltm",
           ltm = ltm)
       } else if (iday[i]){
         r = dplyr::tibble(
