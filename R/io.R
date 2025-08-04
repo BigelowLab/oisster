@@ -3,12 +3,20 @@
 #' @export
 #' @param x database (tibble) of common param, per type (no checking done)
 #' @param path char, the path to the data
+#' @param along NULL or somehting user specified.  If NULL then 
+#'   we assume the user wants to stack by date, but the user might 
+#'   want one attribute per database row.  
 #' @return stars object
-read_oisst <- function(x, path){
+read_oisst <- function(x, path = oisst_path(), along = NULL){
   
   x <- dplyr::arrange(x, date)
   filename = compose_filename(x, path)
-  stars::read_stars(filename, along = list(date = x$date))
+  r = if (is.null(along)){
+    stars::read_stars(filename, along = list(date = x$date))
+  } else {
+    stars::read_stars(filename, along = along)
+  }
+  r
 }
 
 

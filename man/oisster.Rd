@@ -2,8 +2,16 @@
 % Please edit documentation in R/oisster-package.R
 \docType{package}
 \name{oisster}
+\alias{oisster-package}
 \alias{oisster}
 \title{Download and manage local versions of OISST}
 \description{
 Tools in R to download and manage local versions of OISST.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/btupper/oisster}
+}
+
 }

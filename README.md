@@ -5,7 +5,12 @@ R tools to download and manage
 [OISST](https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.highres.html)
 data.
 
-![image](https://psl.noaa.gov/data/gridded/images/small/noaahighres.png)
+<figure>
+<img
+src="https://psl.noaa.gov/data/gridded/images/small/noaahighres.png"
+alt="image" />
+<figcaption aria-hidden="true">image</figcaption>
+</figure>
 
 ### Requirements
 
@@ -77,7 +82,7 @@ DB <- build_database(PATH, save_db = TRUE)
 DB
 ```
 
-    ## # A tibble: 15,382 × 4
+    ## # A tibble: 16,257 × 4
     ##    date       param per   trt  
     ##    <date>     <chr> <chr> <chr>
     ##  1 1981-09-01 sst   day   mean 
@@ -90,7 +95,7 @@ DB
     ##  8 1981-09-08 sst   day   mean 
     ##  9 1981-09-09 sst   day   mean 
     ## 10 1981-09-10 sst   day   mean 
-    ## # … with 15,372 more rows
+    ## # ℹ 16,247 more rows
 
 The database may show that you have variants on the period (`per`) or
 treatment (`trt`).
@@ -102,12 +107,12 @@ dplyr::count(DB, per, trt)
     ## # A tibble: 6 × 3
     ##   per   trt       n
     ##   <chr> <chr> <int>
-    ## 1 ann   max      42
-    ## 2 ann   mean     42
-    ## 3 ann   min      42
-    ## 4 ann   range    42
-    ## 5 ann   sum      42
-    ## 6 day   mean  15172
+    ## 1 ann   max      43
+    ## 2 ann   mean     43
+    ## 3 ann   min      43
+    ## 4 ann   range    43
+    ## 5 ann   sum      43
+    ## 6 day   mean  16042
 
 ### Opening a series
 

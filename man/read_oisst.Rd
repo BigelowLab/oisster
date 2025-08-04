@@ -4,12 +4,16 @@
 \alias{read_oisst}
 \title{Read OISST data files}
 \usage{
-read_oisst(x, path)
+read_oisst(x, path = oisst_path(), along = NULL)
 }
 \arguments{
 \item{x}{database (tibble) of common param, per type (no checking done)}
 
 \item{path}{char, the path to the data}
+
+\item{along}{NULL or somehting user specified.  If NULL then 
+we assume the user wants to stack by date, but the user might 
+want one attribute per database row.}
 }
 \value{
 stars object
