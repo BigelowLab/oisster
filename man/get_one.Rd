@@ -4,17 +4,24 @@
 \alias{get_one}
 \title{Retrieve a single layer (date) for one attribute}
 \usage{
-get_one(x, att = names(x$var)[1], time = get_time(x)[1], left = c(0, -180)[1])
+get_one(
+  x,
+  att = get_varname(x),
+  bb = c(xmin = 0, ymin = -90, xmax = 360, ymax = 90),
+  time = 1,
+  nav = NULL
+)
 }
 \arguments{
 \item{x}{ncdf4 object}
 
 \item{att}{char, the name of the attribute (variable)}
 
+\item{bb}{numeric, named vector of xmin, xmax, ymin and ymax}
+
 \item{time}{Date or index of the date to retrieve}
 
-\item{left}{numeric one of 0 (default) or -180.  If the latter the x values
-span [-180, 180] otherwise [0,360]}
+\item{nav}{list of navigation info, or NULL}
 }
 \value{
 stars object

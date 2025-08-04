@@ -7,14 +7,17 @@
 #'   we assume the user wants to stack by date, but the user might 
 #'   want one attribute per database row.  
 #' @return stars object
+
 read_oisst <- function(x, path = oisst_path(), along = NULL){
   
   x <- dplyr::arrange(x, date)
   filename = compose_filename(x, path)
   r = if (is.null(along)){
-    stars::read_stars(filename, along = list(date = x$date))
+    stars::read_stars(filename, along = list(date = x$date)) |>
+      rlang::set_names(x$param[1])
   } else {
-    stars::read_stars(filename, along = along)
+    stars::read_stars(filename, along = along) |>
+      rlang::set_names(x$param[1])
   }
   r
 }

@@ -4,7 +4,14 @@
 \alias{current_month}
 \title{Retrieve the current month}
 \usage{
-current_month()
+current_month(x = Sys.Date(), offset = 0)
+}
+\arguments{
+\item{x}{Date the date to compute upon (useful for "offset")}
+
+\item{offset}{numeric, days to offset. If 0 (the default) then the current month, 
+if -1 then the prior month, to 2 months before try -32, to get the next month try
+32.  It's a hack.}
 }
 \value{
 Date class object
