@@ -123,7 +123,7 @@ compose_filename <- function(x = decompose_filename(),
   dplyr::rowwise() |>
   dplyr::group_map(
     function(tbl, key){
-      if (!is.na(tbl$ltm)){
+      if ("ltm" %in% names(tbl)){
         r = file.path(path,
                       format(tbl$date, "%Y"),
                       format(tbl$date, "%m%d"),
