@@ -10,14 +10,28 @@
 
 read_oisst <- function(x, path = oisst_path(), along = NULL){
   
-  x <- dplyr::arrange(x, date)
-  filename = compose_filename(x, path)
-  r = if (is.null(along)){
-    stars::read_stars(filename, along = list(date = x$date)) |>
-      rlang::set_names(x$param[1])
+ 
+  utrt = unique(x$trt)
+  
+  if (length(utrt) > 1){
+    x = dplyr::group_by(x, .data$trt)
+    r = x |>
+      dplyr::group_map(
+        function(grp, key){
+          read_oisst(grp, path)
+        }, .keep = TRUE)
+    r = do.call(c, append(r, list(along = NA_integer_))) |>
+      rlang::set_names(dplyr::group_keys(x) |> dplyr::pull())
   } else {
-    stars::read_stars(filename, along = along) |>
-      rlang::set_names(x$param[1])
+    x <- dplyr::arrange(x, date)
+    filename = compose_filename(x, path)
+    r = if (is.null(along)){
+      stars::read_stars(filename, along = list(date = x$date)) |>
+        rlang::set_names(x$param[1])
+    } else {
+      stars::read_stars(filename, along = along) |>
+        rlang::set_names(x$param[1])
+    }
   }
   r
 }
