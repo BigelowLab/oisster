@@ -46,7 +46,7 @@ dates = seq(from = as.Date(ARGS$first_date), to = Sys.Date(), by = 'day')
 missing_dates <- dates[!(dates %in% db$date)]
 
 DB = dplyr::bind_rows(DB,
-                      oisster::fetch_dates(missing_dates,
+                      oisster::fetch_oisst(missing_dates,
                               param = ARGS$param,
                               path = PATH)) |>
   dplyr::distinct() |>

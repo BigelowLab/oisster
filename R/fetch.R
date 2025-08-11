@@ -285,8 +285,9 @@ fetch_day <- function(dates = Sys.Date() + c(-10, -9, -8),
   }
   
   
-  db = dplyr::tibble(date = dates, year = format(date, "%Y")) |>
-    dplyr::group_by(dplyr::all_of("year")) |>
+  db = dplyr::tibble(date = dates, 
+                     year = format(date, "%Y")) |>
+    dplyr::group_by(.data$year) |>
     dplyr::group_map(get_year) |>
     dplyr::bind_rows()
   db
