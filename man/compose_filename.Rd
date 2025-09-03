@@ -14,8 +14,8 @@ compose_filename(x = decompose_filename(), path = "/foo/bar", ext = "tif")
 \item{ext}{char the extension for the files}
 }
 \value{
-fully qualified paths inlcluding <path>/YYYY/mmdd/filename.<ext>"
+fully qualified paths including <path>/YYYY/mmdd/filename.<ext>
 }
 \description{
-Given a database and path, compose filenames
+Filename segments are `variable.per.trt.ltm.ext`
 }

@@ -13,6 +13,9 @@ build_database(path, pattern = "^.*\\\\.tif$", save_db = FALSE)
 
 \item{save_db}{logical, if TRUE save the database in the specified path as database.csv.gz}
 }
+\value{
+tabular database
+}
 \description{
 Build and optionally save a database
 }

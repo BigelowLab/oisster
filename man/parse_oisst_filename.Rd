@@ -15,7 +15,7 @@ parse_oisst_filename(
 \item{x}{char, one or more filenames}
 }
 \value{
-a tibble of filename constituent parts `date`, `param`, `per1, 'trt` and `ltm`
+a tibble of filename constituent parts `date`, `param`, `per`, `trt` and `ltm`
 }
 \description{
 Not to be confused with \code{decompose_filename}

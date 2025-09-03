@@ -4,12 +4,16 @@
 #'
 #' @export
 #' @param x char, one or more filenames
-#' @return a tibble of filename constituent parts `date`, `param`, `per1, 'trt` and `ltm`
-parse_oisst_filename = function(x = c("icec.day.mean.1981.nc", "icec.day.mean.ltm.1991-2020.nc",
-                                      "icec.mon.mean.nc", "icec.week.mean.nc",
+#' @return a tibble of filename constituent parts `date`, `param`, `per`, `trt` and `ltm`
+parse_oisst_filename = function(x = c("icec.day.mean.1981.nc", 
+                                      "icec.day.mean.ltm.1991-2020.nc",
+                                      "icec.mon.mean.nc", 
+                                      "icec.week.mean.nc",
                                       "icec.day.mean.ltm.nc",
-                                      "sst.day.mean.1981.nc", "sst.day.mean.ltm.1991-2020.nc",
-                                      "sst.mon.mean.nc", "sst.week.mean.nc",
+                                      "sst.day.mean.1981.nc", 
+                                      "sst.day.mean.ltm.1991-2020.nc",
+                                      "sst.mon.mean.nc", 
+                                      "sst.week.mean.nc",
                                       "sst.day.mean.ltm.nc")){
                 
   x = basename(x)
@@ -60,6 +64,7 @@ parse_oisst_filename = function(x = c("icec.day.mean.1981.nc", "icec.day.mean.lt
 #' @param ext char the extension to remove before processing. NA to skip.
 #' @return tibble database
 decompose_filename <- function(x =  c("sst.day.mean.1981-09-01.tif",
+                                      "sst.day.mean.NA.1981-09-01.tif",
                                       "icec.mon.max.1981-09-01.tif",
                                       "icec.mon.max.ltm.1991-2020.tif",
                                       "sst.day.mean.ltm.1971-2000.1971-01-01.tif",
@@ -81,6 +86,7 @@ decompose_filename <- function(x =  c("sst.day.mean.1981-09-01.tif",
           trt = "ltm",
           ltm = s[4])
       } else if (length(s) >= 6){
+        # sst.day.mean.ltm.1971-2000.1971-01-01
         r = dplyr::tibble(
           date = as.Date(s[6], format = "%Y-%m-%d"),
           param = s[1],
@@ -88,13 +94,15 @@ decompose_filename <- function(x =  c("sst.day.mean.1981-09-01.tif",
           trt = s[3],
           ltm = s[5])
       } else if (length(s) >= 5){
+        # sst.day.mean.NA.1981-09-01.tif"
         r = dplyr::tibble(
-          date = as.Date(paste0(substr(s[5], 1,4), "-01-01"), format = "%Y-%m-%d"),
+          date = as.Date(s[5],format = "%Y-%m-%d"),
           param = s[1],
           per = s[2],
           trt = s[3],
-          ltm = s[5])
+          ltm = if(s[4] == "NA") NA_character_ else s[4] )
       } else {
+        # sst.day.mean.1981-09-01
         r = dplyr::tibble(
           date = as.Date(s[4]),
           param = s[1],
@@ -110,11 +118,13 @@ decompose_filename <- function(x =  c("sst.day.mean.1981-09-01.tif",
 
 #' Given a database and path, compose filenames
 #'
+#' Filename segments are `variable.per.trt.ltm.ext`
+#' 
 #' @export
 #' @param x tibble database
 #' @param path char, path description
 #' @param ext char the extension for the files
-#' @return fully qualified paths inlcluding <path>/YYYY/mmdd/filename.<ext>"
+#' @return fully qualified paths including <path>/YYYY/mmdd/filename.<ext>
 compose_filename <- function(x = decompose_filename(), 
                              path = "/foo/bar",
                              ext = "tif"){
@@ -146,12 +156,29 @@ compose_filename <- function(x = decompose_filename(),
 }
 
 
+#' List files in a database
+#' 
+#' @export
+#' @param path char, path to the dataset
+#' @param pattern char pattern to search for (as regular expression)
+#' @param ... other arguments for `list.files`
+#' @return character vector of zero or more filename
+list_files = function(path, 
+                      pattern = "^.*\\.tif$",
+                      ...){
+  list.files(path,
+             recursive = TRUE,
+             pattern = pattern, 
+             ...)
+}
+
 #' Build and optionally save a database
 #' 
 #' @export
 #' @param path char, path to the dataset
 #' @param pattern char pattern to search for (as regular expression)
 #' @param save_db logical, if TRUE save the database in the specified path as database.csv.gz
+#' @return tabular database
 build_database <- function(path, 
                            pattern = "^.*\\.tif$",
                            save_db = FALSE){
